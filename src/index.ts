@@ -18,8 +18,8 @@ app.listen(PORT, () => {
 
   SampleWorker("SampleQueue");
 
-  const code = `print("Hello")`;
-  runPython(code);
+  const code = `x = input()\nprint("value of x is ", x)`;
+  runPython(code, "100");
   // sampleQueueProducer("SampleJob", {
   //   name: "Tousif",
   //   age: 22,

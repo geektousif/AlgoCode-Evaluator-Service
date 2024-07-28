@@ -3,6 +3,7 @@ import Docker from "dockerode";
 async function createContainer(imageName: string, cmdExecutable: string[]) {
   const docker = new Docker();
   const container = await docker.createContainer({
+    platform: "linux/amd64",
     Image: imageName,
     Cmd: cmdExecutable,
     AttachStdin: true, // to enable input streams
