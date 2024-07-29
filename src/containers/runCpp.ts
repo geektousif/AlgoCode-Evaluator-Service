@@ -40,7 +40,7 @@ async function runCpp(code: string, inputTestCase: string) {
 
   // TODO fork bomb prone code
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  await new Promise((res, _) => {
+  const response = await new Promise((res, _) => {
     loggerStream.on("end", () => {
       console.log(rawLogBuffer);
       const completeBuffer = Buffer.concat(rawLogBuffer);
@@ -53,6 +53,7 @@ async function runCpp(code: string, inputTestCase: string) {
   });
 
   await cppDockerContainer.remove();
+  return response;
 }
 
 // TODO TLE for 5 seconds, also Memory limit exceeded error

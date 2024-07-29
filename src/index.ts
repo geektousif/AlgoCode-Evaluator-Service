@@ -1,12 +1,16 @@
 import express from "express";
 
 import { PORT } from "./config/serverConfig";
-import runCpp from "./containers/runCpp";
+// import runCpp from "./containers/runCpp";
+import submissionQueueProducer from "./producers/submissionQueueProducer";
 // import runJava from "./containers/runJavaDocker";
 // import runPython from "./containers/runPythonDocker";
 // import sampleQueueProducer from "./producers/sampleQueueProducer";
 import apiRouter from "./routes";
+import { SubmissionPayload } from "./types/submissionPayload";
+import { submission_queue } from "./utils/constants";
 import SampleWorker from "./workers/sampleWorker";
+import SubmissionWorker from "./workers/submissionWorker";
 
 const app = express();
 
@@ -19,6 +23,8 @@ app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 
   SampleWorker("SampleQueue");
+
+  SubmissionWorker(submission_queue);
 
   // const pythonCode = `x = input()\nprint("value of x is ", x)`;
   // runPython(pythonCode, "100");
@@ -46,22 +52,30 @@ app.listen(PORT, () => {
   // runJava(javaCode, inputTestCase);
 
   const cppCode = `
-  #include <iostream>
+    #include <iostream>
 
-  using namespace std;
+    using namespace std;
 
-  int main() {
-    int input;
-    cin >> input;
-    cout << "value of input is " << input << endl;
-    for (int i = 0; i < input; i++) {
-      cout << i << endl;
+    int main() {
+      int input;
+      cin >> input;
+      cout << "value of input is " << input << endl;
+      for (int i = 0; i < input; i++) {
+        cout << i << endl;
+      }
+      return 0;
     }
-    return 0;
-  }
-`;
+  `;
 
   const inputTestCase = `10
-  `;
-  runCpp(cppCode, inputTestCase);
+    `;
+
+  submissionQueueProducer({
+    anything: {
+      language: "CPP",
+      inputCase: inputTestCase,
+      code: cppCode,
+    } satisfies SubmissionPayload,
+  });
+  //   runCpp(cppCode, inputTestCase);
 });
